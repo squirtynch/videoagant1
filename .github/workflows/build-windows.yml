@@ -55,7 +55,7 @@ jobs:
     - name: Build with PyInstaller
       shell: pwsh
       run: |
-        pyinstaller build/app.spec --distpath dist --workpath build/temp --specpath build --noconfirm
+        pyinstaller build/app.spec --noconfirm
 
     - name: Validate executable
       shell: pwsh
