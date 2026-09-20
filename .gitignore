@@ -80,3 +80,4 @@ Since all the added and modified files are .py files (source code), no .gitignor
 ```  
 ```node_modules/
 .next/
+node_modules/
