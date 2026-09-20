@@ -34,7 +34,8 @@ jobs:
     
     - name: Run unit tests
       run: |
-        PYTHONPATH=src pytest tests/unit -v --tb=short
+        export PYTHONPATH=src
+        pytest tests/unit -v --tb=short
     
     - name: Upload coverage report
       uses: actions/upload-artifact@v4

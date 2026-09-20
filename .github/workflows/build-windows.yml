@@ -26,8 +26,10 @@ jobs:
         pip install pyinstaller>=6.0.0
     
     - name: Run tests
+      shell: pwsh
       run: |
-        PYTHONPATH=src pytest tests/unit -v --tb=short
+        $env:PYTHONPATH = "src"
+        pytest tests/unit -v --tb=short
     
     - name: Create PyInstaller spec
       run: |
