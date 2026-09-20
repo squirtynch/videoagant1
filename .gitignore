@@ -90,3 +90,4 @@ dmypy.json
 .coverage*
 ```node_modules/
 .next/
+node_modules/
