@@ -1,0 +1,53 @@
+name: Build Windows
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .
+        pip install pyinstaller>=6.0.0
+    
+    - name: Run tests
+      run: |
+        PYTHONPATH=src pytest tests/unit -v --tb=short
+    
+    - name: Create PyInstaller spec
+      run: |
+        mkdir -p build
+        echo \"\"\"
+        from PyInstaller.utils.hooks import collect_submodules, collect_data_files
+        
+        a = Analysis(\n            ['src/video_agent/main.py'],\n            pathex=[],\n            binaries=[],\n            datas=[],\n            hiddenimports=[\n                'PySide6',\n                'sqlalchemy',\n                'pydantic',\n                'structlog',\n            ] + collect_submodules('video_agent'),\n            hookspath=[],\n            hooksconfig={},\n            runtime_hooks=[],\n            excludes=[],\n            win_no_prefer_redirects=False,\n            win_private_assemblies=False,\n            cipher=None,\n            noarchive=False,\n        )\n        \n        pyz = PYZ(a.pure, a.zipped_data, cipher=None)\n        \n        exe = EXE(\n            pyz,\n            a.scripts,\n            a.binaries,\n            a.zipfiles,\n            a.datas,\n            [],\n            name='AI-Video-Agent',\n            debug=False,\n            bootloader_ignore_signals=False,\n            strip=False,\n            upx=True,\n            upx_exclude=[],\n            runtime_tmpdir=None,\n            console=False,\n            disable_windowed_traceback=False,\n            argv_emulation=False,\n            target_arch=None,\n            codesign_identity=None,\n            entitlements_file=None,\n            icon=None,\n        )\n        \"\"\" > build/app.spec\n      shell: bash
+    
+    - name: Build with PyInstaller
+      run: |
+        pyinstaller build/app.spec --distpath dist --workpath build/temp --specpath build
+    
+    - name: Validate executable
+      run: |
+        if (Test-Path "dist/AI-Video-Agent.exe") {\n          Write-Host "Executable created successfully"\n        } else {\n          Write-Error "Executable not found"\n          exit 1\n        }\n      shell: pwsh
+    
+    - name: Upload application artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: AI-Video-Agent-Windows
+        path: dist/AI-Video-Agent.exe
+        if-no-files-found: error
