@@ -14,9 +14,17 @@ from .interfaces import (
     TranscriptionResult,
 )
 from .registry import ProviderRegistry, ModelRegistry
-from .capabilities import CapabilityRegistry
+from .capabilities import CapabilityRegistry, Capability
+from .router import AIRouter
+from .providers import (
+    OpenAICompatibleProvider,
+    MockProvider,
+    WhisperTranscriptionProvider,
+    LocalWhisperProvider,
+)
 
 __all__ = [
+    # Interfaces
     "AIProvider",
     "TranscriptionProvider",
     "VisionProvider",
@@ -24,7 +32,16 @@ __all__ = [
     "ModelInfo",
     "AIResponse",
     "TranscriptionResult",
+    # Registries
+    "CapabilityRegistry",
+    "Capability",
     "ProviderRegistry",
     "ModelRegistry",
-    "CapabilityRegistry",
+    # Router
+    "AIRouter",
+    # Providers
+    "OpenAICompatibleProvider",
+    "MockProvider",
+    "WhisperTranscriptionProvider",
+    "LocalWhisperProvider",
 ]
