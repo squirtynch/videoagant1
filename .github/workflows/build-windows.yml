@@ -55,7 +55,8 @@ jobs:
     - name: Build with PyInstaller
       shell: pwsh
       run: |
-        pyinstaller build/app.spec --noconfirm
+        # Run pyinstaller from workspace root with correct spec path
+        pyinstaller --workpath "${{ github.workspace }}\\build\\temp" --distpath "${{ github.workspace }}\\dist" --specpath "${{ github.workspace }}\\build" "${{ github.workspace }}\\build\\app.spec" --noconfirm
 
     - name: Validate executable
       shell: pwsh
