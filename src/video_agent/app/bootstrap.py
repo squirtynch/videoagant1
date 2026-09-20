@@ -6,6 +6,14 @@ from PySide6.QtWidgets import QApplication
 from video_agent.app.config import AppSettings, load_settings
 from video_agent.storage.database import DatabaseManager
 from video_agent.diagnostics.logging import setup_logging
+from video_agent.application import (
+    ProjectService,
+    MediaService,
+    BriefService,
+    ShortService,
+    EditingService,
+    ExportService,
+)
 
 
 class ApplicationContainer:
@@ -36,15 +44,45 @@ class ApplicationContainer:
         self.db_manager.initialize()
         self.logger.info("Database initialized")
         
-        # Register services (to be implemented in subsequent phases)
-        # self.services['project_service'] = ProjectService(self.db_manager)
-        # self.services['media_service'] = MediaService(self.db_manager)
-        # etc.
+        # Register services
+        self._register_services()
         
         self._initialized = True
         self.logger.info("Application initialization complete")
         
         return self
+    
+    def _register_services(self):
+        """Register all application services."""
+        projects_dir = self.settings.get_projects_dir
+        
+        self.register_service('project_service', ProjectService(
+            db_manager=self.db_manager,
+            projects_dir=projects_dir
+        ))
+        
+        self.register_service('media_service', MediaService(
+            db_manager=self.db_manager,
+            media_cache_dir=self.settings.get_media_cache_dir
+        ))
+        
+        self.register_service('brief_service', BriefService(
+            db_manager=self.db_manager
+        ))
+        
+        self.register_service('short_service', ShortService(
+            db_manager=self.db_manager
+        ))
+        
+        self.register_service('editing_service', EditingService(
+            db_manager=self.db_manager
+        ))
+        
+        self.register_service('export_service', ExportService(
+            db_manager=self.db_manager
+        ))
+        
+        self.logger.info("All services registered")
     
     def get_service(self, name: str):
         """Get a registered service by name."""
